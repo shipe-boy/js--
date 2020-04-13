@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>栈结构的封装</title>
+	</head>
+	<body>
+		
+		
+		<script type="text/javascript">
+			//封装栈类	--数组实现
+			function Stack(){
+				//栈中的元素
+				this.items = []
+				
+				//栈的相关操作
+				//1、将元素加入栈顶（压栈）
+				Stack.prototype.push = function(element){
+					this.items.push(element)
+				}
+				//2、从栈中取出栈顶元素，
+				Stack.prototype.pop = function(){
+					return this.items.pop()
+				}
+				//3、查看栈顶的元素
+				Stack.prototype.peek = function(){
+					return this.items[this.items.length -1]
+				}
+				//4、判断栈是否为空
+				Stack.prototype.isEmpty = function(){
+					return this.items.length === 0
+				}
+				//5、获取栈中元素长度
+				Stack.prototype.size = function(){
+					return this.items.length
+				}
+				//6、toString()方法
+				Stack.prototype.toString = function(){
+					//1 12 13 45 6
+					return this.items.join(" ")
+				}
+			}
+			
+			//栈的使用
+			/* var S = new Stack()
+			S.push(10)
+			S.push(11)
+			S.push(100)
+			S.push(45)
+			S.push(78)
+			console.log(S.pop())
+			console.log(S.pop())
+			console.log(S.peek())
+			console.log(S.isEmpty())
+			console.log(S.size())
+			console.log(S.toString())
+			console.log(S) */
+			
+			
+			/**		十进制100转二进制的过程
+			  * 	100/2 	得50 	余0		栈底
+			  * 	50/2 	得25 	余0
+			  * 	25/2 	得12 	余1
+			  * 	12/2 	得6 	余0
+			  * 	6/2 	得3 	余0
+			  * 	3/2 	得1 	余1
+			  * 	1/2 	得0 	余1		栈顶
+			  * 	二进制表示为： 1100100
+			  * 	从后往前，类似于栈
+			  * */
+			
+			//函数： 十进制转二进制
+			function dec2bin(decNumber){
+				//1、创建栈对象
+				var stack = new Stack();
+				
+				//2、循环操作，依次入栈
+				while(decNumber > 0){
+					//余数
+					stack.push(decNumber % 2);
+					//得数向下取整
+					decNumber = Math.floor(decNumber / 2)
+				}
+				
+				//3、依次出栈
+				let binNumber = ''
+				while(!stack.isEmpty()){
+					binNumber += stack.pop()
+				}
+				// console.log(stack)
+				return binNumber
+			}
+			console.log(dec2bin(10))
+			console.log(dec2bin(100))
+			console.log(dec2bin(1000))
+		</script>
+	</body>
+</html>

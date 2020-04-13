@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		
+		<script type="text/javascript">
+			//封装队列类		--数组实现(基于数组性能不高，删除第一个时后面元素会一个一个前移)，链表高
+			function Queue(){
+				//属性
+				this.items = []
+				
+				//方法
+				//1.向队列尾部添加一个或多个项
+				Queue.prototype.enqueue = function(element){
+					//添加多个
+					// for(let i = 0; i <arguments.length; i++){
+					// 	this.items.push(arguments[i])
+					// }
+					//添加一个
+					this.items.push(element)
+				}
+				//2.移除队列中第一个元素
+				Queue.prototype.dequeue = function(){
+					return this.items.shift()
+				}
+				//3.查看第一个元素
+				Queue.prototype.front = function(){
+					return this.items[0];
+				}
+				//4.队列是否为空
+				Queue.prototype.isEmpty = function(){
+					return this.items.length === 0;
+				}
+				//5.队列元素个数
+				Queue.prototype.size = function(){
+					return this.items.length;
+				}
+				//6.toString
+				Queue.prototype.toString = function(){
+					return this.items.join(" ")
+				}
+			}
+			//测试
+			// let Q = new Queue()
+			// Q.enqueue('a')
+			// Q.enqueue('b')
+			// // Q.enqueue('c','d','e','f')
+			// Q.enqueue('g')
+			// // console.log(Q)
+			// Q.dequeue()
+			// Q.dequeue()
+			// console.log(Q.front())
+			// console.log(Q.isEmpty())
+			// console.log(Q.size())
+			// console.log(Q.toString())
+			
+			
+			
+			//面试题： 击鼓传花
+			/**
+			 * nameList	参与游戏的人
+			 * num 指定数字
+			 * */
+			function games(nameList, num){
+				//创建队列
+				let queue = new Queue()
+				
+				//加入队列
+				for(let i = 0; i < nameList.length; i++){
+					queue.enqueue(nameList[i])
+				}
+				
+				//不是num的从队列中删除，再加入队列
+				//是num的直接从队列中删除
+				while(queue.size() > 1){
+					for(let j = 0; j < num -1; j++){	//不应被删除的元素，循环完后队列第一个是应该被删除的元素
+						queue.enqueue(queue.dequeue())
+					}
+					queue.dequeue()
+				}
+				console.log(queue.front()) 
+				console.log(nameList.indexOf(queue.front()))
+			}
+			
+			games(['a','b','c','d','e'], 2)
+		</script>
+	</body>
+</html>

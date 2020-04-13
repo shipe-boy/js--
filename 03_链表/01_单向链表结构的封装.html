@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>单向链表</title>
+	</head>
+	<body>
+		
+		
+		<script type="text/javascript">
+			//封装单向链表
+			function LinkedList(){
+				//和优先级队列一样，封装内部类：节点类
+				//参数可以直传data，后面在对next赋值。也可以传data，next
+				function Node(data){
+					this.data = data;
+					this.next = null;
+				}
+				
+				//链表头
+				this.head = null;
+				//链表长度
+				this.length = 0;
+				
+				//链表方法
+				//1、链表尾部新增节点
+				LinkedList.prototype.append = function(data){
+					//1.创建节点
+					var newNode = new Node(data);
+					
+					//2.判断新增节点是不是在第一位
+					if(this.length == 0){	//是第一个节点
+						this.head = newNode
+					}else{	//不是第一个节点
+						var currentNode = this.head;
+						while(currentNode.next){	//从链表头找到最后一个节点，在添加新的节点
+							currentNode = currentNode.next;
+						}
+						currentNode.next = newNode
+					}
+					
+					//3.更新链表长度
+					this.length += 1;
+				}
+				
+				//2、toString()方法
+				LinkedList.prototype.toString = function(){
+					var currentNode = this.head;
+					var listString = '';
+					while(currentNode){
+						listString += currentNode.data + " ";
+						currentNode = currentNode.next;
+					}
+					return listString
+				}
+				
+				//3、insert，指定位置插入元素
+				//position相当于数组的下标
+				LinkedList.prototype.insert = function(position, data){
+					//1.边界判断
+					if(position < 0 || position > this.length)return false;
+					
+					//2.创建新节点
+					var newNode = new Node(data);
+					
+					//3.判断插入位是否是第一个
+					if(position == 0){
+						newNode.next = this.head;
+						this.head = newNode;
+					}else{	//其余位插入，包括最后一位
+						var provNode = null;	//插入的前一个节点
+						var currentNode = this.head;	//插入位置节点
+						var index = 0	//当前位置下标
+						while(index < position){
+							provNode = currentNode;
+							currentNode = currentNode.next;
+							index ++
+						}
+						newNode.next = currentNode;
+						provNode.next = newNode;
+						
+					}
+					
+					//4.更新链表长度
+					this.length += 1;
+					
+					return true
+				}
+				
+				//4、get，获取指定位置的节点
+				LinkedList.prototype.get = function(position){
+					//1.越界判断
+					if(position < 0 || position > this.length - 1) return null
+					
+					//2.查找节点
+					var currentNode = this.head;
+					var index = 0;
+					while(index < position){
+						currentNode = currentNode.next;
+						index++
+					}
+					return currentNode.data;
+				}
+				
+				//5、indexOf，查找指定节点的位置
+				LinkedList.prototype.indexOf = function(data){
+					var currentNode = this.head;
+					var index = 0;
+					while(currentNode){
+						if(currentNode.data == data){
+							return index;
+						}
+						currentNode = currentNode.next;
+						index++
+					}
+					return -1
+				}
+				
+				//6、update，更新指定位置的节点
+				LinkedList.prototype.update = function(position, newDate){
+					//1.越界判断
+					if(position < 0 || position >= this.length) return false
+					
+					//2.查找对应节点
+					var currentNode = this.head;
+					var index = 0;
+					while(index < position){
+						currentNode = currentNode.next;
+						index++;
+					}
+					
+					//3.更新节点
+					currentNode.data = newDate;
+					return true
+				}
+				
+				//7、removeAt，删除指定位置的节点
+				LinkedList.prototype.removeAt = function(position){
+					//1.越界判断
+					if(position < 0 || position >= this.length) return null
+					
+					//2.查找对应位置额节点，
+					//判断是不是第一个节点
+					var currentNode = this.head;
+					if(position == 0){
+						this.head = this.head.next
+					}else{
+						var provNode = null;
+						var index = 0;
+						while(index < position){
+							provNode = currentNode;
+							currentNode = currentNode.next;
+							index++
+						}
+						provNode.next = currentNode.next;
+					}
+					//3.修改长度
+					this.length -= 1
+					return currentNode.data
+				}
+				
+				//8、remove，删除指定的数据
+				LinkedList.prototype.remove = function(data){
+					//1.获取数据的位置
+					var position = this.indexOf(data)
+					
+					//2.删除指定位置元素
+					return this.removeAt(position)
+				}
+				
+				//9、isEmpty，列表是否为空
+				LinkedList.prototype.isEmpty = function(){
+					return this.length === 0
+				}
+				
+				//10、size，返回链表节点个数
+				LinkedList.prototype.size = function(){
+					return this.length
+				}
+			}
+			
+			//测试
+			var list = new LinkedList();
+			
+			//追加
+			list.append('1')
+			list.append('2')
+			list.append('3')
+			list.append('4')
+			
+			// list.insert(0, 'aaa')
+			// list.insert(2, 'bbb')
+			// list.insert(6, '最后一个节点')
+			//查看
+			// alert(list)
+			// alert(list.get(6))
+			// alert(list.get(3))
+			// alert(list.get(2))
+			// alert(list.indexOf('最后一个节点'))
+			// alert(list.indexOf('aaa'))
+			// alert(list.indexOf('bbb'))
+			// alert(list.indexOf('6'))
+			// list.update(0, 'aaa')
+			// list.update(3, '465')
+			// list.update(2, 898)
+			// list.removeAt(0)
+			// alert(list)
+			// list.removeAt(2)
+			// alert(list)
+			list.remove('1')
+			list.remove('3')
+			alert(list)
+			alert(list.isEmpty())
+			alert(list.size())
+		</script>
+	</body>
+</html>
