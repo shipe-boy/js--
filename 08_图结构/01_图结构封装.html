@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<script src="./queue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="./dict.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			//封装图结构
+			function Graph(){
+				//属性：顶点（数组）/ 边（字典，js中就是对象）
+				this.vertexes = []
+				this.edges = new Dictionay()
+				
+				//方法
+				//添加方法
+				//1、添加顶点
+				Graph.prototype.addVertex = function (v){
+					this.vertexes.push(v);
+					this.edges.set(v, [])	//新顶点对应的边是一个空数组
+					/* 结构
+					edges
+					 {
+						顶点A: [顶点B, 顶点C]
+					 }
+					vertexes  所有的顶点
+					[顶点A, 顶点B, 顶点C]
+					 */
+				}
+				
+				//2、添加边
+				Graph.prototype.addEdge = function (v1, v2){	//v1 v2 两个顶点之间的边
+					//v1 v2 之间是无向的
+					this.edges.get(v1).push(v2)
+					this.edges.get(v2).push(v1)
+					
+					//v1 v2 之间是有向的
+					// this.edges.get(v1).push(v2)
+				}
+				
+				//toString
+				Graph.prototype.toString = function (){
+					var resultStr = ''
+					
+					for(var i = 0; i < this.vertexes.length; i++){
+						resultStr += this.vertexes[i] + '-->';
+						
+						//此顶点对应的所有的边
+						var vEdge = this.edges.get(this.vertexes[i]);
+						for(var j = 0; j < vEdge.length; j++){
+							resultStr += vEdge[j] + ' '
+						}
+						
+						resultStr += '\n'
+						
+					}
+					return resultStr;
+				}
+				
+				
+				//初始化状态颜色
+				Graph.prototype.initColor = function(){
+					var colors = [];
+					for(var i = 0; i < this.vertexes.length; i++){
+						colors[this.vertexes[i]] = 'white'
+						// colors['A'] = 'white'
+					}
+					return colors
+				}
+				
+				//广度优先搜索（BFS）
+				Graph.prototype.bfs = function(initV, handler){
+					//1、初始化颜色
+					var colors = this.initColor();
+					
+					//2、创建队列
+					var queue = new Queue();
+					
+					//3、将初始顶点加入到队列
+					queue.enqueue(initV)
+					
+					//4、循环遍历队列中的元素
+					while(!queue.isEmpty()){
+						//4.1、取出队列中第一个元素
+						var v = queue.dequeue()
+						
+						//4.2、设置该顶点颜色
+						colors[v] = 'gray';
+						
+						//4.3、取出该顶点链接的顶点
+						var vList = this.edges.get(v)
+						
+						//4.4、遍历
+						vList.forEach(item => {
+							if(colors[item] === 'white'){	//避免队列中添加重复的顶点
+								colors[item] = 'gray';
+								queue.enqueue(item)
+							}
+						})
+						
+						//4.5、v顶点已被访问且被探测过了
+						handler(v)
+						colors[v] = 'black';
+						
+					}
+				}
+				
+				
+				//深度优先搜索（DFS）
+				Graph.prototype.dfs = function(initV, handler){
+					//1、初始化颜色
+					var colors = this.initColor();
+					
+					//2、循环遍历顶点
+					this.dfsVisit(initV, colors, handler)
+				}
+				//递归访问
+				Graph.prototype.dfsVisit = function (v, colors, handler){
+					//1、顶点变色
+					colors[v] = 'gray';
+					
+					//2、处理当前顶点
+					handler(v)
+					
+					//3、探测当前节点的相连顶点
+					var vList = this.edges.get(v);
+					vList.forEach(item => {
+						if(colors[item] === 'white'){
+							this.dfsVisit(item, colors, handler)
+						}
+					})
+					
+					//4、当前顶点探测完，变色
+					colors[v] = 'black';
+					
+					
+				}
+			}
+			
+			
+			//测试
+			var g = new Graph()
+			
+			//顶点
+			var myVertexes = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+			
+			//添加顶点
+			myVertexes.forEach(item => {
+				g.addVertex(item)
+			})
+			
+			//添加边
+			g.addEdge('A', 'B')
+			g.addEdge('A', 'C')
+			g.addEdge('A', 'D')
+			g.addEdge('C', 'D')
+			g.addEdge('C', 'G')
+			g.addEdge('D', 'G')
+			g.addEdge('D', 'H')
+			g.addEdge('B', 'E')
+			g.addEdge('B', 'F')
+			g.addEdge('E', 'I')
+			
+			// console.log(g.toString())
+			
+			//广度优先搜索（BFS）
+			var result = ''
+			g.bfs(g.vertexes[0], function(v){
+				result += v + ' '
+			})
+			// console.log(result)
+			result = ''
+			g.dfs(g.vertexes[0], function(v){
+				result += v + ' '
+			})
+			console.log(result)
+		</script>
+	</body>
+</html>

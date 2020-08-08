@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		
+		
+		<script type="text/javascript">
+			//哈希函数
+			//1、将字符串转换成比较大的数字，hashcode
+			//2、将hashcode压缩在数组（大小）范围内
+			function hashFunc(str, size){
+				var hashcode = 0;
+				
+				//利用霍纳法则，将字符串转成较大的数字  质数37使用很多
+				for(var i = 0; i < str.length; i++){
+					hashcode = 37 * hashcode + str.charCodeAt(i)
+				}
+				
+				//将hashcode压缩到数组中
+				var index = hashcode % size;
+				
+				return index
+				
+			}
+			
+			//测试
+			alert(hashFunc('abc', 7))
+			alert(hashFunc('cba', 7))
+			alert(hashFunc('nba', 7))
+			alert(hashFunc('mba', 7))
+			
+			
+			
+		</script>
+	</body>
+</html>

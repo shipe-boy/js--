@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		
+		<script type="text/javascript">
+			function HashTable(){
+				//属性
+				this.storage = []	//数组
+				this.limit = 7		//数组大小，即哈希表大小
+				this.count = 0	//当前数组中已经存放了多少元素 用于计算加载因子，介于0.25 - 0.75 之间，对哈字表进行缩小或扩大
+				
+				
+				//方法
+				//哈希函数
+				HashTable.prototype.hashFunc = function (str, size){
+					var hashcode = 0;
+					//利用霍纳法则，将字符串转成较大的数字  质数37使用很多
+					for(var i = 0; i < str.length; i++){
+						hashcode = 37 * hashcode + str.charCodeAt(i)
+					}
+					//将hashcode压缩到数组中
+					var index = hashcode % size;
+					return index;
+				}
+				
+				//添加&修改
+				HashTable.prototype.put = function(key, value){	//{age, 18}
+					//根据key获取下标
+					var index = this.hashFunc(key, this.limit)
+					
+					//拿到对应下标的桶 --》 数组
+					var bucket = this.storage[index]
+					if(bucket == null){
+						bucket = []
+						this.storage[index] = bucket;
+					}
+					
+					//判断是否是修改操作（数组中已有该元素）
+					for(var i = 0; i < bucket.length; i++){
+						var tuple = bucket[i]	//每一个数组中的元素
+						if(key == tuple[0]){
+							tuple[1] = value
+							return
+						}
+					}
+					
+					//添加操作
+					bucket.push([key, value])
+					this.count += 1;
+					
+					//判断是否需要扩容
+					if(this.count/this.limit > 0.75){
+						this.resize(this.getPrime(this.limit * 2))
+					}
+					
+				}
+				
+				//获取操作
+				HashTable.prototype.get = function (key){
+					//1.根据key获取下标
+					var index = this.hashFunc(key, this.limit)
+					
+					//2.拿到对应下标的桶 --》 数组
+					var bucket = this.storage[index]
+					
+					//3. 没有数组
+					if(bucket == null){
+						return null
+					}
+					
+					//4.线性查找数组中有没有该元素
+					for(var i = 0; i < bucket.length; i++){
+						var tuple = bucket[i]	//每一个数组中的元素
+						if(key == tuple[0]){
+							return tuple[1]
+						}
+					}
+					
+					//5.没有该元素
+					return null
+					
+				}
+				
+				//删除操作
+				HashTable.prototype.remove = function (key){
+					//1.根据key获取下标
+					var index = this.hashFunc(key, this.limit)
+					
+					//2.拿到对应下标的桶 --》 数组
+					var bucket = this.storage[index]
+					
+					//3. 没有数组,返回null
+					if(bucket == null){
+						return null
+					}
+					
+					//4.线性查找数组中有没有该元素，有则删除
+					for(var i = 0; i < bucket.length; i++){
+						var tuple = bucket[i]	//每一个数组中的元素
+						if(key == tuple[0]){
+							bucket.splice(i,1)
+							this.count--;
+							
+							//缩小哈希表
+							if(this.limit > 7 && this.count / this.limit > 0.25){	//规定最小大小大于7
+								var newSize = Math.floor(this.limit / 2)
+								this.resize(this.getPrime(newSize))
+							}
+							
+							
+							return tuple[1]
+						}
+					}
+					
+					//5.没有该元素
+					return null
+					
+				}
+				
+				//哈希表的长度
+				HashTable.prototype.size = function(){
+					return this.count
+				}
+				//哈希表是否为空
+				HashTable.prototype.isEmpty = function(){
+					return this.count == 0
+				}
+				
+				//哈希表扩容/缩小
+				HashTable.prototype.resize = function(newLimit){
+					//暂存原有的哈希表
+					var oldStorage = this.storage;
+					
+					//新建更大的哈希表
+					this.storage = [];
+					this.count = 0;
+					this.limit = newLimit;
+					
+					//将原有的元素重新插入到新的哈希表中
+					for(var i = 0; i < oldStorage.length; i++){
+						var bucket = oldStorage[i];
+						
+						if(bucket == null){
+							continue
+						}
+						
+						for(var j = 0; j < bucket.length; j++){
+							var tuple = bucket[j];
+							this.put(tuple[0], tuple[1])
+						}
+					}
+				}
+				
+				//判断质数
+				HashTable.prototype.isPrime = function (num){
+					//任何一个数的 一个因数一定小于等于这个数的平方根，另一个大于。如16
+					var temp = parseInt(Math.sqrt(num))
+					for(var i = 2; i <= temp; i++){
+						if(num % i === 0){
+							return false
+						}
+					}
+					return true
+				}
+				
+				//获得某个数相近的质数
+				HashTable.prototype.getPrime = function(num){
+					
+					while(!this.isPrime(num)){
+						num++
+					}
+					return num
+				}
+				
+			}
+			
+			var h = new HashTable()
+			
+			h.put('abc', 123)
+			h.put('cba', 321)
+			h.put('nba', 666)
+			h.put('mba', 888)
+			
+			h.get('aaa')
+			h.get('abc')
+			h.get('nbs')
+			
+			h.put('abc', 777)
+			alert(h.get('abc'))
+			
+			// h.remove('abc')
+			alert(h.remove('abc'))
+			alert(h.get('abc'))
+			console.log(h)
+		</script>
+	</body>
+</html>

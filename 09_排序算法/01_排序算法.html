@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		
+		<script type="text/javascript">
+			//创建列表类
+			function ArrayList(){
+				//属性
+				this.array = [];
+				
+				//方法
+				//插入数据方法
+				ArrayList.prototype.insert = function(item){
+					this.array.push(item)
+				}
+				//toString
+				ArrayList.prototype.toString = function(){
+					return this.array.join('-')
+				}
+				//交换位置
+				ArrayList.prototype.swap = function(m, n){
+					var temp = this.array[m];
+					this.array[m] = this.array[n];
+					this.array[n] = temp;
+				}
+				
+				
+				//------排序算法-------
+				//冒泡排序
+				ArrayList.prototype.bobbleSort = function(){
+					var len = this.array.length;
+					
+					//第一次比较到len - 1
+					//第二次比较到len - 2
+					for(var j = len - 1; j >= 0; j--){//外层循环，一轮后最后一个是排好的
+						//两个数据依次比较
+						for(var i = 0; i < j; i++){
+							if(this.array[i] > this.array[i+1]){//交换位置
+								this.swap(i, i+1)
+							}
+						}
+					}
+				}
+				
+				//选择排序
+				ArrayList.prototype.selectionSort = function(){
+					var len = this.array.length;
+					//j到len - 2，i就会到len - 1
+					for(var j = 0; j < len - 1; j++){//外层循环，一轮后第一个是排好的
+						var min = j;
+						for(var i = min + 1; i < len; i++){
+							if(this.array[min] > this.array[i]){
+								min = i
+							}
+						}
+						this.swap(min, j)
+					}
+					
+					
+				}
+				
+				//插入排序
+				ArrayList.prototype.insertionSort = function(){
+					var len = this.array.length;
+					
+					//外层循环：去下标1，和前面局部有序的下标0进行比较
+					for(var i = 1; i < len; i++){
+						//取出下标i的元素，一次和前面局部有序的数组进行比较
+						var temp = this.array[i];
+						var j = i
+						for(; j > 0; j--){
+							if(temp < this.array[j - 1]){	//小于，j位置元素后移
+								this.array[j] = this.array[j - 1]
+							}else{
+								
+								break
+							}
+						}
+						this.array[j] = temp
+					}
+					
+					
+				}
+				
+				//希尔排序
+				ArrayList.prototype.shellSort = function(){
+					var len = this.array.length;
+					
+					//获取初始间隔
+					var gap = Math.floor(len / 2);
+					
+					//循环
+					while(gap >= 1){
+					//以gap为间隔进行分组， 对分组进行插入排序。插入排序默认第一个元素是局部有序的，循环从gap开始
+						for(var i = gap; i < len; i++){
+							//取出下标i的元素，依次和前面局部有序的数组进行比较
+							var temp = this.array[i];
+							var j = i
+							for(; j > gap - 1; j-= gap){	//最大循环到gap -1
+								if(temp < this.array[j - gap]){	//小于，大的数后移
+									this.array[j] = this.array[j - gap]
+								}else{
+									break
+								}
+							}
+							this.array[j] = temp//小的数前移，或者自己复制自己
+						}
+						//缩小间隔
+						gap = Math.floor(gap / 2)
+					}
+				}
+				
+				//快速排序
+				ArrayList.prototype.median = function(left, right){
+					//中间位置
+					var center = Math.floor((left + right) / 2);
+					
+					//对选中的三个数排序，使其相对有序//可以先左右判断在  左中  右中
+					if(this.array[left] > this.array[right]){	// 41 2 10
+						this.swap(left, right)
+					}
+					if(this.array[left] > this.array[center]){	// 55 1 33
+						this.swap(left, center)
+					}
+					if(this.array[center] > this.array[right]){	// 11 55 22
+						this.swap(center, right)
+					}
+					
+					
+					//整个数组选出的三个数相对有序后将中间的书移动到right-1为开始排序，因为right位一定比center位大
+					this.swap(center, right - 1)
+					
+					return this.array[right - 1]
+					
+				}
+				//
+				ArrayList.prototype.quickSort = function(){
+					this.quick(0, this.array.length - 1)
+				}
+				//递归排序，每次都会找出某一个元素的正确位置
+				ArrayList.prototype.quick = function(left, right){
+					//结束条件
+					if(left >= right) return
+					
+					//获取枢纽，也就是即将放到正确位置的元素
+					// var pivot = this.median(left, right);
+					var pivot = this.array[left];
+					
+					//设置左右指针开始查找，左边找大于的，右面找小于的
+					var i = left ;	//左指针
+					var j = right; //右指针
+					while(i < j){
+						while(i < j && this.array[i] <= pivot){	//左边找到大于的就停掉
+							i++
+						}
+						while(i < j && this.array[j] >= pivot){	//右边找到小于的就停掉
+							j--
+						}
+						
+						//交换位置
+						this.swap(i, j)
+					}
+					
+					//将枢纽放在正确位置上
+					this.swap(right - 1, i)
+					
+					//分而治之，
+					this.quick(left, i - 1)
+					this.quick(i + 1, right)
+					
+					
+				}
+				
+			}
+			
+			
+			//测试
+			var list = new ArrayList();
+			
+			list.insert(66)
+			list.insert(33)
+			list.insert(99)
+			list.insert(55)
+			list.insert(77)
+			list.insert(11)
+			list.insert(44)
+			
+			console.log("初始数据：", list.toString())
+			
+			
+			// list.bobbleSort()
+			// list.selectionSort()
+			// list.insertionSort()
+			// list.shellSort()
+			list.quickSort()
+			// console.log("冒泡排序：", list.toString())
+			// console.log("选择排序：", list.toString())
+			// console.log("插入排序：", list.toString())
+			// console.log("希尔排序：", list.toString())
+			console.log("快速排序：", list.toString())
+			
+		</script>
+		
+	</body>
+</html>

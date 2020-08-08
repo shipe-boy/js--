@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		
+		<script type="text/javascript">
+			
+			//只能被1和自己整除
+			function isPrime(num){
+				for(var i = 2; i < num; i++){
+					if(num % i === 0){
+						return false
+					}
+				}
+				return true
+			}
+			
+			//更高效的
+			function isPrime1(num){
+				//任何一个数的 一个因数一定小于等于这个数的平方根，另一个大于。如16
+				var temp = parseInt(Math.sqrt(num))
+				for(var i = 2; i <= temp; i++){
+					if(num % i === 0){
+						return false
+					}
+				}
+				return true
+			}
+		</script>
+	</body>
+</html>
